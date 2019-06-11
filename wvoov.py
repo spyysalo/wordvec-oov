@@ -34,8 +34,7 @@ def argparser():
 def load_word_vector_vocabulary(path, options):
     vocab = set()
     with open(path, 'rb') as f:
-        dim_line = f.readline().rstrip(b'\n')
-        for ln, l in enumerate(f, start=2):
+        for ln, l in enumerate(f, start=1):
             word, rest = l.split(b' ', 1)
             try:
                 word = word.decode(options.encoding)
@@ -43,6 +42,8 @@ def load_word_vector_vocabulary(path, options):
                 warning('Failed to decode word on line {} in {} as {}'.format(
                     ln, path, options.encoding))
                 continue
+            if ln == 1 and word.isdigit():
+                continue    # assume word vector dimension
             if word in vocab:
                 warning('duplicate word in {}: {}'.format(word, path))
             vocab.add(word)
